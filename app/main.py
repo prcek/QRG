@@ -1,12 +1,15 @@
 from flask import Flask
-from flask import make_response
+from flask import jsonify
+from flask import make_response, request
 from reportlab.pdfgen import canvas
 import base64
+import logging
 from io import BytesIO
 
 import qrcode as qrc
 
 app = Flask(__name__)
+app.debug = True
 
 @app.route("/")
 def hello():
@@ -60,6 +63,18 @@ def qccode():
     response = make_response(img_out)
     response.mimetype = 'image/png'
     return response
+
+
+@app.route("/test", methods=["POST"])
+def test():
+    data = request.get_json()
+    app.logger.debug(data)
+    r = dict()
+    r["rc"] = True
+    app.logger.debug(r)
+    return jsonify(**r)
+
+
 
 
 if __name__ == "__main__":
