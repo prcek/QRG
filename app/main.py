@@ -1,7 +1,15 @@
+
+# -*- coding: utf-8 -*-
+
 from flask import Flask
 from flask import jsonify
 from flask import make_response, request
+
 from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+import os
 import base64
 import logging
 from io import BytesIO
@@ -10,6 +18,14 @@ import qrcode as qrc
 
 app = Flask(__name__)
 app.debug = True
+
+folderFonts = os.path.dirname(__file__) + os.sep + 'fonts'
+pdfmetrics.registerFont(TTFont('DejaVuSansMono', os.path.join(folderFonts,'DejaVuSansMono.ttf')))
+pdfmetrics.registerFont(TTFont('DejaVuSans', os.path.join(folderFonts,'DejaVuSans.ttf')))
+pdfmetrics.registerFont(TTFont('DejaVuSansBold', os.path.join(folderFonts,'DejaVuSansBold.ttf')))
+
+
+TEST_TEXT = "Příliš žluťoučký kůň úpěl ďábelské ódy"
 
 @app.route("/")
 def hello():
@@ -21,7 +37,8 @@ def pdf():
     output = cStringIO.StringIO()
 
     p = canvas.Canvas(output)
-    p.drawString(100, 100, 'Hello')
+    p.setFont('DejaVuSansBold', 16)
+    p.drawString(100, 100,TEST_TEXT )
     p.showPage()
     p.save()
     
