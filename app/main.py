@@ -15,9 +15,12 @@ import logging
 from io import BytesIO
 
 import qrcode as qrc
+import qcards
+import base64
 
 app = Flask(__name__)
 app.debug = True
+app.config["JSON_AS_ASCII"] = False
 
 folderFonts = os.path.dirname(__file__) + os.sep + 'fonts'
 pdfmetrics.registerFont(TTFont('DejaVuSansMono', os.path.join(folderFonts,'DejaVuSansMono.ttf')))
@@ -26,10 +29,37 @@ pdfmetrics.registerFont(TTFont('DejaVuSansBold', os.path.join(folderFonts,'DejaV
 
 
 TEST_TEXT = "Příliš žluťoučký kůň úpěl ďábelské ódy"
+QRG_VERSION = "0.1"
+QRG_HELLO = "QR Generator"
+
 
 @app.route("/")
 def hello():
-   return "Hello World from Flask !"
+   r = dict()
+   r["version"] = QRG_VERSION
+   r["info"] = QRG_HELLO
+   return jsonify(**r)
+
+@app.route("/cards", methods=["GET","POST"])
+def cards():
+    if request.method == 'POST':
+        data = request.get_json()
+        app.logger.debug(data)
+        pdf_out = qcards.make_qcards(data)
+        r = dict()
+        r["rc"] = True
+        r["xxx"] = TEST_TEXT
+        r["data"] = base64.b64encode(pdf_out)
+#        app.logger.debug(r)
+        return jsonify(**r)
+
+
+    pdf_out = qcards.make_qcards([{"name":"pepa"}])
+    response = make_response(pdf_out)
+    response.headers['Content-Disposition'] = "attachment; filename='sakulaci.pdf"
+    response.mimetype = 'application/pdf'
+    return response
+  
 
 @app.route("/pdf")
 def pdf():
@@ -38,6 +68,7 @@ def pdf():
 
     p = canvas.Canvas(output)
     p.setFont('DejaVuSansBold', 16)
+
     p.drawString(100, 100,TEST_TEXT )
     p.showPage()
     p.save()
@@ -82,12 +113,17 @@ def qccode():
     return response
 
 
+
+
+
+
 @app.route("/test", methods=["POST"])
 def test():
     data = request.get_json()
     app.logger.debug(data)
     r = dict()
     r["rc"] = True
+    r["data"] = "hello"
     app.logger.debug(r)
     return jsonify(**r)
 
