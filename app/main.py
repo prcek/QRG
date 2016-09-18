@@ -45,7 +45,10 @@ def cards():
     if request.method == 'POST':
         data = request.get_json()
         app.logger.debug(data)
+        app.logger.debug("cards gen start")
         pdf_out = qcards.make_qcards(data)
+        app.logger.debug("cards gen end")
+
         r = dict()
         r["rc"] = True
         r["xxx"] = TEST_TEXT
