@@ -22,7 +22,12 @@ import cStringIO
 def safe(s):
     if s is None:
         return ""
+    return escape(s)
+def nsafe(s):
+    if s is None:
+        return ""
     return escape(str(s))
+
 
 def getStyleSheet():
     stylesheet = StyleSheet1()
@@ -198,7 +203,7 @@ def make_qcard_cell(qcard):
     info_line_2 = safe(qcard.get("info_line_2"))
     course_code = safe(qcard.get("course_code"))
     season_name = safe(qcard.get("season_name"))
-    gid = safe(qcard.get("ref_gid"))
+    gid = nsafe(qcard.get("ref_gid"))
     name = safe(qcard.get("name"))
     surname = safe(qcard.get("surname"))
     qrcode = safe(qcard.get("qrcode"))
