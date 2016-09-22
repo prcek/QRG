@@ -22,7 +22,7 @@ import cStringIO
 def safe(s):
     if s is None:
         return ""
-    return escape(s)
+    return escape(str(s))
 
 def getStyleSheet():
     stylesheet = StyleSheet1()
