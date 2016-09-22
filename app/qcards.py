@@ -41,6 +41,7 @@ def getStyleSheet():
     stylesheet.add(ParagraphStyle(name='CardHeaderRight', parent=stylesheet['Card'],
                                   textColor=colors.white,
                                   alignment=TA_CENTER,
+                                  fontSize = 8
                                   )
                    )
 
@@ -76,26 +77,33 @@ def getStyleSheet():
                    )
 
 
+    stylesheet.add(ParagraphStyle(name='CardBackText', parent=stylesheet['Card'],
+                                  textColor=colors.black,
+                                  alignment=TA_CENTER,
+                                  fontSize=8
+                                  )
+                   )
+
+    stylesheet.add(ParagraphStyle(name='CardGID', parent=stylesheet['Card'],
+                                  textColor=colors.black,
+                                  alignment=TA_RIGHT,
+                                  fontSize=4
+                                  )
+                   )
+
+
     return stylesheet
 
-
-def make_qcards(qcards):
+def make_qcards_back(text): 
     output = cStringIO.StringIO()
     doc = SimpleDocTemplate(output, pagesize=A4 ,leftMargin=1*cm, rightMargin=1*cm, topMargin=0.8*cm, bottomMargin=1*cm, showBoundary=0)
-
-
     pad = 10
-
     elements = []
-
     cardcells = []
 
-    for qcard in qcards:
-        cell = make_qcard_cell(qcard)
+    for x in range(0,10):
+        cell = make_qcard_back_cell(text)
         cardcells.append(cell)
-
-
-
 
     line=[]
     data=[]
@@ -111,12 +119,6 @@ def make_qcards(qcards):
    
     rows = len(data) 
 
-#    if rows==0:
-#        elements = []
-#        elements.append(Paragraph(u"žádné karty",styleN))
-#        doc.build(elements)
-#        return
-
  
     bigtable = Table(data,colWidths=[8.5*cm,8.5*cm], rowHeights= rows*[5.43*cm], style=[
         ('GRID',(0,0),(-1,-1),0.5,colors.gray),
@@ -128,20 +130,65 @@ def make_qcards(qcards):
         ('BOTTOMPADDING',(0,0),(-1,-1),pad),
     ]) 
     elements.append(bigtable)
-   
- 
- #   if len(elements)==0:
- #       elements.append(Paragraph(u"žádná data",styleH))
     doc.build(elements)
-
-
-
-
-
-
     pdf_out = output.getvalue()
     output.close()
     return pdf_out
+
+
+
+
+def make_qcards(qcards):
+    output = cStringIO.StringIO()
+    doc = SimpleDocTemplate(output, pagesize=A4 ,leftMargin=1*cm, rightMargin=1*cm, topMargin=0.8*cm, bottomMargin=1*cm, showBoundary=0)
+    pad = 10
+    elements = []
+    cardcells = []
+
+    for qcard in qcards:
+        cell = make_qcard_cell(qcard)
+        cardcells.append(cell)
+
+    line=[]
+    data=[]
+    for t in cardcells:
+        line.append(t) 
+        if len(line)==2:
+            data.append(line)
+            line=[]
+
+    if len(line)>0:
+        line.extend((2-len(line))*" ")
+        data.append(line)
+   
+    rows = len(data) 
+
+    bigtable = Table(data,colWidths=[8.5*cm,8.5*cm], rowHeights= rows*[5.43*cm], style=[
+        ('GRID',(0,0),(-1,-1),0.5,colors.gray),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+        ('LEFTPADDING',(0,0),(-1,-1),pad),
+        ('RIGHTPADDING',(0,0),(-1,-1),pad),
+        ('TOPPADDING',(0,0),(-1,-1),pad),
+        ('BOTTOMPADDING',(0,0),(-1,-1),pad),
+    ]) 
+    elements.append(bigtable)
+    doc.build(elements)
+    pdf_out = output.getvalue()
+    output.close()
+    return pdf_out
+
+def make_qcard_back_cell(text):
+
+    logging.info("gen qcard back %s" % text)
+
+    ipad = 1
+
+    styles = getStyleSheet()
+            
+
+    cell = Paragraph(text,styles["CardBackText"])
+    return cell
 
 
 def make_qcard_cell(qcard):
@@ -151,6 +198,7 @@ def make_qcard_cell(qcard):
     info_line_2 = safe(qcard.get("info_line_2"))
     course_code = safe(qcard.get("course_code"))
     season_name = safe(qcard.get("season_name"))
+    gid = safe(qcard.get("ref_gid"))
     name = safe(qcard.get("name"))
     surname = safe(qcard.get("surname"))
     qrcode = safe(qcard.get("qrcode"))
@@ -170,40 +218,53 @@ def make_qcard_cell(qcard):
     qrcode_image.add(qrw)
 
             
-
-    c01 = Paragraph(course_code,styles["CardCode"])
-    c11 = Paragraph(season_name,styles["CardSeason"])
-    c02 = Paragraph(info_text,styles["CardInfoLines"])
-    c03 = Paragraph(name+" "+surname,styles["CardFullname"])
     c00 = Paragraph("STARLET",styles["CardHeaderLeft"])
     c10 = Paragraph("TANEČNÍ ŠKOLA<br/>MANŽELŮ BURYANOVÝCH",styles["CardHeaderRight"])
 
+
+    c01 = Paragraph(course_code,styles["CardCode"])
+    c11 = Paragraph(season_name,styles["CardSeason"])
+
+    c02 = Paragraph("id: "+str(gid),styles["CardGID"])
+
+
+    c03 = Paragraph(info_text,styles["CardInfoLines"])
+    c04 = Paragraph(name+" "+surname,styles["CardFullname"])
+
+    
 
     cell = Table([ 
         [c00,c10,"#"],
         [c01,c11,qrcode_image],
         [c02,"#","#"], 
-        [c03,"#","#"]],
-        colWidths=[2.7*cm,2.0*cm,2.7*cm],rowHeights=[1*cm,1.7*cm,1.00*cm,0.7*cm], style=[
+        [c03,"#","#"], 
+        [c04,"#","#"]],
+        colWidths=[2.7*cm,2.0*cm,2.7*cm],rowHeights=[1*cm,1.3*cm,0.4*cm,1.00*cm,0.7*cm], style=[
             ('BOX',(0,0),(-1,-1),1,colors.black),
             ('SPAN',(1,0),(2,0)),  #ts line
             ('BACKGROUND',(0,0),(-1,0),colors.black),
             ('VALIGN',(0,0),(-1,0),'MIDDLE'),
 
-            ('LINEBELOW',(0,1),(1,1),1,colors.black),
-            ('LINEAFTER',(1,1),(1,2),1,colors.black),
+            ('LINEBELOW',(0,2),(1,2),1,colors.black),
+            ('LINEAFTER',(1,1),(1,3),1,colors.black),
 
-            ('SPAN',(2,1),(2,2)),  #qr
+            ('SPAN',(2,1),(2,3)),  #qr
 
-            ('SPAN',(0,2),(1,2)),  #info line
+            ('SPAN',(0,2),(1,2)),  #gid
             ('VALIGN',(0,2),(1,2),'BOTTOM'),
 
-            ('SPAN',(0,3),(2,3)),  #name
-            ('BACKGROUND',(0,3),(-1,3),colors.black),
+            ('SPAN',(0,3),(1,3)),  #info line
+            ('VALIGN',(0,3),(1,3),'BOTTOM'),
+
+            ('SPAN',(0,4),(2,4)),  #name
+            ('BACKGROUND',(0,4),(-1,4),colors.black),
 
             ('LEFTPADDING',(0,0),(-1,-1),ipad),
             ('RIGHTPADDING',(0,0),(-1,-1),ipad),
+            ('RIGHTPADDING',(0,2),(1,2),ipad*5),
             ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
             ('ALIGN',(0,0),(-1,-1),'CENTER'),
         ])
     return cell
+
+

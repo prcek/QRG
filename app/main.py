@@ -40,6 +40,30 @@ def hello():
    r["info"] = QRG_HELLO
    return jsonify(**r)
 
+@app.route("/cards_back", methods=["GET","POST"])
+def cards_back():
+    if request.method == 'POST':
+        data = request.get_json()
+        app.logger.debug(data)
+        app.logger.debug("cards back gen start")
+        pdf_out = qcards.make_qcards_back(data.text)
+        app.logger.debug("cards back gen end")
+
+        r = dict()
+        r["rc"] = True
+        r["xxx"] = TEST_TEXT
+        r["data"] = base64.b64encode(pdf_out)
+        return jsonify(**r)
+
+
+    pdf_out = qcards.make_qcards_back("testovaci text na zadni stranu, ktery je hooooodne dlouhy a neni zalomeny")
+    response = make_response(pdf_out)
+    response.headers['Content-Disposition'] = "attachment; filename='karty_zadek.pdf"
+    response.mimetype = 'application/pdf'
+    return response
+
+
+
 @app.route("/cards", methods=["GET","POST"])
 def cards():
     if request.method == 'POST':
@@ -56,10 +80,10 @@ def cards():
 #        app.logger.debug(r)
         return jsonify(**r)
 
-
-    pdf_out = qcards.make_qcards([{"name":"pepa"}])
+    c={"ref_gid":"12345","name":"Pepa", "surname":"Vopička", "info_line_1":"info line 1", "info_line_2":"info line 2", "course_code":"X12", "season_name": "2015/16"}
+    pdf_out = qcards.make_qcards([c,c,c,c,c,c,c,c,c,c])
     response = make_response(pdf_out)
-    response.headers['Content-Disposition'] = "attachment; filename='sakulaci.pdf"
+    response.headers['Content-Disposition'] = "attachment; filename='karty.pdf"
     response.mimetype = 'application/pdf'
     return response
   
