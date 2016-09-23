@@ -20,6 +20,9 @@ import cStringIO
 
 
 QCARD_IMAGE = os.path.dirname(__file__) + os.sep + 'images' + os.sep + "starlet_logo_inv.png"
+starlet_logo = Image(QCARD_IMAGE)
+starlet_logo.drawWidth = 2*cm
+starlet_logo.drawHeight = 1*cm
 
 
 def safe(s):
@@ -241,9 +244,6 @@ def make_qcard_cell(qcard):
     qrcode_image.add(qrw)
 
     
-    starlet_logo = Image(QCARD_IMAGE)
-    starlet_logo.drawWidth = 2*cm
-    starlet_logo.drawHeight = 1*cm
 
     c00 =  starlet_logo # Paragraph("STARLET",styles["CardHeaderLeft"])
     c10 = Paragraph("TANEČNÍ ŠKOLA<br/>MANŽELŮ BURYANOVÝCH",styles["CardHeaderRight"])
