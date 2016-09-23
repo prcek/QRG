@@ -29,6 +29,8 @@ pdfmetrics.registerFont(TTFont('DejaVuSansBold', os.path.join(folderFonts,'DejaV
 
 
 TEST_TEXT = "Příliš žluťoučký kůň úpěl ďábelské ódy"
+QCARD_BACK_TEXT = "Legitimace je nepřenosná. Za její zneužití zodpovídá její majitel. Vystavení náhradní legitimace za poplatek 100 Kč."
+QCARD_BACK_IMAGE = os.path.dirname(__file__) + os.sep + 'images' + os.sep + "starlet_logo.png"
 QRG_VERSION = "0.1"
 QRG_HELLO = "QR Generator"
 
@@ -46,7 +48,7 @@ def cards_back():
         data = request.get_json()
         app.logger.debug(data)
         app.logger.debug("cards back gen start")
-        pdf_out = qcards.make_qcards_back(data.text)
+        pdf_out = qcards.make_qcards_back(data.text,QCARD_BACK_IMAGE)
         app.logger.debug("cards back gen end")
 
         r = dict()
@@ -56,9 +58,9 @@ def cards_back():
         return jsonify(**r)
 
 
-    pdf_out = qcards.make_qcards_back("testovaci text na zadni stranu, ktery je hooooodne dlouhy a neni zalomeny")
+    pdf_out = qcards.make_qcards_back(QCARD_BACK_TEXT,QCARD_BACK_IMAGE)
     response = make_response(pdf_out)
-    response.headers['Content-Disposition'] = "attachment; filename='karty_zadek.pdf"
+    response.headers['Content-Disposition'] = "attachment; filename=karty_zadek.pdf"
     response.mimetype = 'application/pdf'
     return response
 
@@ -83,7 +85,7 @@ def cards():
     c={"ref_gid":"12345","name":"Pepa", "surname":"Vopička", "info_line_1":"info line 1", "info_line_2":"info line 2", "course_code":"X12", "season_name": "2015/16"}
     pdf_out = qcards.make_qcards([c,c,c,c,c,c,c,c,c,c])
     response = make_response(pdf_out)
-    response.headers['Content-Disposition'] = "attachment; filename='karty.pdf"
+    response.headers['Content-Disposition'] = "attachment; filename=karty.pdf"
     response.mimetype = 'application/pdf'
     return response
   

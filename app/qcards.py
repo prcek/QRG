@@ -8,15 +8,18 @@ from reportlab.lib.units import inch,mm,cm
 from reportlab.lib.styles import StyleSheet1, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph,PageBreak
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph,PageBreak, Image
 from reportlab.graphics.barcode.qr import QrCodeWidget
 from reportlab.graphics.shapes import Drawing 
 
 from xml.sax.saxutils import escape
 
-
+import os
 import logging
 import cStringIO
+
+
+QCARD_IMAGE = os.path.dirname(__file__) + os.sep + 'images' + os.sep + "starlet_logo_inv.png"
 
 
 def safe(s):
@@ -46,7 +49,8 @@ def getStyleSheet():
     stylesheet.add(ParagraphStyle(name='CardHeaderRight', parent=stylesheet['Card'],
                                   textColor=colors.white,
                                   alignment=TA_CENTER,
-                                  fontSize = 8
+                                  fontSize = 7,
+                                  leading = 9
                                   )
                    )
 
@@ -85,7 +89,8 @@ def getStyleSheet():
     stylesheet.add(ParagraphStyle(name='CardBackText', parent=stylesheet['Card'],
                                   textColor=colors.black,
                                   alignment=TA_CENTER,
-                                  fontSize=8
+                                  fontSize=5,
+                                  leading = 7
                                   )
                    )
 
@@ -99,7 +104,7 @@ def getStyleSheet():
 
     return stylesheet
 
-def make_qcards_back(text): 
+def make_qcards_back(text,img_file): 
     output = cStringIO.StringIO()
     doc = SimpleDocTemplate(output, pagesize=A4 ,leftMargin=1*cm, rightMargin=1*cm, topMargin=0.8*cm, bottomMargin=1*cm, showBoundary=0)
     pad = 10
@@ -107,7 +112,7 @@ def make_qcards_back(text):
     cardcells = []
 
     for x in range(0,10):
-        cell = make_qcard_back_cell(text)
+        cell = make_qcard_back_cell(text,img_file)
         cardcells.append(cell)
 
     line=[]
@@ -183,16 +188,29 @@ def make_qcards(qcards):
     output.close()
     return pdf_out
 
-def make_qcard_back_cell(text):
+def make_qcard_back_cell(text,img_file):
 
     logging.info("gen qcard back %s" % text)
 
     ipad = 1
 
     styles = getStyleSheet()
-            
+    a = Image(img_file)  
+    a.drawHeight = 3*cm # * (a.drawHeight / a.drawWidth)
+    a.drawWidth = 6*cm 
 
-    cell = Paragraph(text,styles["CardBackText"])
+    p = Paragraph(text,styles["CardBackText"])
+
+
+    cell = Table([ [a], [p] ],  colWidths=[7*cm],rowHeights=[3.0*cm,1*cm], 
+        style=[
+    #   ('GRID',(0,0),(-1,-1),0.5,colors.gray),
+        ('ALIGN',(0,0),(-1,-1),'CENTER'),
+        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+
+        ])
+
+
     return cell
 
 
@@ -222,8 +240,12 @@ def make_qcard_cell(qcard):
     qrcode_image = Drawing(unit,unit,transform=[unit/w,0,0,unit/h,0,0])
     qrcode_image.add(qrw)
 
-            
-    c00 = Paragraph("STARLET",styles["CardHeaderLeft"])
+    
+    starlet_logo = Image(QCARD_IMAGE)
+    starlet_logo.drawWidth = 2*cm
+    starlet_logo.drawHeight = 1*cm
+
+    c00 =  starlet_logo # Paragraph("STARLET",styles["CardHeaderLeft"])
     c10 = Paragraph("TANEČNÍ ŠKOLA<br/>MANŽELŮ BURYANOVÝCH",styles["CardHeaderRight"])
 
 
