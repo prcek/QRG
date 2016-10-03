@@ -109,7 +109,7 @@ def getStyleSheet():
 
 def make_qcards_back(text,img_file): 
     output = cStringIO.StringIO()
-    doc = SimpleDocTemplate(output, pagesize=A4 ,leftMargin=1*cm, rightMargin=1*cm, topMargin=0.8*cm, bottomMargin=1*cm, showBoundary=0)
+    doc = SimpleDocTemplate(output, pagesize=A4 ,leftMargin=0.7*cm, rightMargin=1.3*cm, topMargin=0.8*cm, bottomMargin=1*cm, showBoundary=0)
     pad = 10
     elements = []
     cardcells = []
@@ -134,7 +134,7 @@ def make_qcards_back(text,img_file):
 
  
     bigtable = Table(data,colWidths=[8.5*cm,8.5*cm], rowHeights= rows*[5.43*cm], style=[
-        ('GRID',(0,0),(-1,-1),0.5,colors.gray),
+#        ('GRID',(0,0),(-1,-1),0.5,colors.gray),
         ('ALIGN',(0,0),(-1,-1),'CENTER'),
         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
         ('LEFTPADDING',(0,0),(-1,-1),pad),

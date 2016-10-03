@@ -30,7 +30,7 @@ pdfmetrics.registerFont(TTFont('DejaVuSansBold', os.path.join(folderFonts,'DejaV
 
 TEST_TEXT = "Příliš žluťoučký kůň úpěl ďábelské ódy"
 QCARD_BACK_TEXT = "Legitimace je nepřenosná. Za její zneužití zodpovídá její majitel. Vystavení náhradní legitimace za poplatek 100 Kč."
-QCARD_BACK_IMAGE = os.path.dirname(__file__) + os.sep + 'images' + os.sep + "starlet_logo.png"
+QCARD_BACK_IMAGE = os.path.dirname(__file__) + os.sep + 'images' + os.sep + "starlet_logo_color.png"
 QRG_VERSION = "0.1"
 QRG_HELLO = "QR Generator"
 
