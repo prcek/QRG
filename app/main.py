@@ -89,6 +89,27 @@ def cards():
     response.mimetype = 'application/pdf'
     return response
   
+@app.route("/cmd_cards", methods=["GET","POST"])
+def cmd_cards():
+    if request.method == 'POST':
+        data = request.get_json()
+        app.logger.debug(data)
+        app.logger.debug("cards gen start")
+        pdf_out = qcards.make_cmd_qcards(data)
+        app.logger.debug("cards gen end")
+
+        r = dict()
+        r["rc"] = True
+        r["data"] = base64.b64encode(pdf_out)
+        return jsonify(**r)
+
+    c={"cmd_id":"12345","name":"command 12345", "desc":"this command makes world happy", "cmd_qrcode": "blablablablablllllaaaa"}
+    pdf_out = qcards.make_cmd_qcards([c,c,c,c,c,c,c,c,c,c])
+    response = make_response(pdf_out)
+    response.headers['Content-Disposition'] = "attachment; filename=karty.pdf"
+    response.mimetype = 'application/pdf'
+    return response
+
 
 @app.route("/pdf")
 def pdf():
