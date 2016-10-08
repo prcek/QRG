@@ -73,6 +73,15 @@ def getStyleSheet():
                                   )
                    )
 
+    stylesheet.add(ParagraphStyle(name='CmdCardBottom', parent=stylesheet['Card'],
+                                  fontSize=8,
+                                  textColor=colors.white,
+                                  alignment=TA_CENTER,
+                                  )
+                   )
+
+
+
     stylesheet.add(ParagraphStyle(name='CardCode', parent=stylesheet['Card'],
                                   textColor=colors.black,
                                   alignment=TA_CENTER,
@@ -103,6 +112,7 @@ def getStyleSheet():
                                   fontSize=4
                                   )
                    )
+
 
 
     return stylesheet
@@ -369,7 +379,7 @@ def make_cmd_qcard_cell(qcard):
 
 
     c03 = Paragraph(desc,styles["CardInfoLines"])
-    c04 = Paragraph("OVLÁDACÍ KARTA",styles["CardFullname"])
+    c04 = Paragraph("OVLÁDACÍ KARTA",styles["CmdCardBottom"])
 
     
 
@@ -400,7 +410,7 @@ def make_cmd_qcard_cell(qcard):
             ('VALIGN',(0,3),(1,3),'BOTTOM'),
 
             ('SPAN',(0,4),(2,4)),  #name
-            ('BACKGROUND',(0,4),(-1,4),colors.black),
+            ('BACKGROUND',(0,4),(-1,4),colors.red),
 
             ('LEFTPADDING',(0,0),(-1,-1),ipad),
             ('RIGHTPADDING',(0,0),(-1,-1),ipad),
