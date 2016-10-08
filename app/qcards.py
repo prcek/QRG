@@ -369,7 +369,7 @@ def make_cmd_qcard_cell(qcard):
 
 
     c03 = Paragraph(desc,styles["CardInfoLines"])
-    c04 = Paragraph("SERVISNÍ KARTA",styles["CardFullname"])
+    c04 = Paragraph("OVLÁDACÍ KARTA",styles["CardFullname"])
 
     
 
