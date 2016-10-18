@@ -351,6 +351,7 @@ def make_cmd_qcard_cell(qcard):
     logging.info("gen cmd qcard for %s" % qcard)
     cmd_id = safe(qcard.get("cmd_id"))
     name = safe(qcard.get("name"))
+    season_name = safe(qcard.get("season"))
     desc = safe(qcard.get("desc"))
     qrcode = safe(qcard.get("cmd_qrcode"))
 
@@ -374,6 +375,7 @@ def make_cmd_qcard_cell(qcard):
 
 
     c01 = Paragraph(name,styles["CardCode"])
+    c11 = Paragraph(season_name,styles["CardSeason"])
 
     c02 = Paragraph("id: "+str(cmd_id),styles["CardGID"])
 
@@ -385,7 +387,7 @@ def make_cmd_qcard_cell(qcard):
 
     cell = Table([ 
         [c00,c10,"#"],
-        [c01,"#",qrcode_image],
+        [c01,c11,qrcode_image],
         [c02,"#","#"], 
         [c03,"#","#"], 
         [c04,"#","#"]],
@@ -400,7 +402,7 @@ def make_cmd_qcard_cell(qcard):
 
             ('SPAN',(2,1),(2,3)),  #qr
 
-            ('SPAN',(0,1),(1,1)),  #gid
+            #('SPAN',(0,1),(1,1)),  #gid
             ('VALIGN',(0,1),(1,1),'BOTTOM'),
 
             ('SPAN',(0,2),(1,2)),  #info line
